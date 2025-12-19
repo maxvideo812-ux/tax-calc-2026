@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор налоговой нагрузки 2026 (ДИМАКС)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .brand {
+            color: #e67e22;
+            font-weight: bold;
+        }
+        
+        /* Стили для полей ввода */
+        .input-section {
+            display: grid;
+            grid-template-columns: 1fr 1px 1fr;
+            gap: 40px;
+            margin-bottom: 30px;
+            padding: 25px;
+            background-color: #fff8f0;
+            border: 1px solid #ffe0b2;
+            border-radius: 8px;
+            align-items: start;
+        }
+        
+        .divider {
+            width: 1px;
+            height: 100%;
+            background-color: #ffd180;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .label-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* --- ПОДСКАЗКИ (TOOLTIPS) --- */
+        .tooltip-container {
+            position: relative;
+            margin-left: 8px;
+            display: inline-block;
+            cursor: help;
+        }
+        
+        .tooltip-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 18px;
+            height: 18px;
+            background-color: #e67e22;
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        
+        .tooltip-icon:hover {
+            background-color: #d35400;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: 240px;
+            background-color: #333;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 100;
+            bottom: 135%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            font-weight: normal;
+            line-height: 1.4;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            pointer-events: none;
+        }
+
+        .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 18px;
+            font-family: monospace;
+            text-align: right;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus {
+            border-color: #e67e22;
+            outline: 2px solid #e67e2233;
+        }
+
+        /* Таблица */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 13px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        th, td {
+            padding: 10px 8px;
+            text-align: right;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            font-weight: 500;
+            vertical-align: middle;
+            font-size: 12px;
+        }
+        /* Первый столбец (Режим) */
+        td:first-child {
+            text-align: left;
+            font-weight: bold;
+            background-color: #f9f9f9;
+            width: 200px;
+        }
+        
+        /* Столбец Итого налогов */
+        td:nth-child(2) {
+            font-weight: bold;
+            background-color: #fffdf9;
+            border-right: 2px solid #e67e22; /* Визуальный разделитель */
+        }
+        
+        .load-col {
+            font-weight: bold;
+            color: #555;
+            background-color: #f4f4f4;
+        }
+
+        .best-option {
+            border: 2px solid #27ae60 !important;
+        }
+        .best-option td:first-child::after {
+            content: " ★ Выгодно";
+            color: #27ae60;
+            font-size: 11px;
+            display: block;
+            font-weight: normal;
+        }
+        
+        @media (max-width: 1100px) {
+            .container { padding: 10px; }
+            .input-section { grid-template-columns: 1fr; gap: 20px; }
+            .divider { display: none; }
+            /* Горизонтальный скролл для таблицы */
+            table { display: block; overflow-x: auto; white-space: nowrap; }
+            th, td { padding: 8px 4px; min-width: 90px; }
+            td:first-child { position: sticky; left: 0; z-index: 2; border-right: 2px solid #ddd; }
+        }
+    
+/* Фиксируем одинаковую ширину всех столбцов кроме первого */
+#resultTable th:not(:first-child),
+#resultTable td:not(:first-child) {
+    width: 120px;
+    min-width: 120px;
+    max-width: 120px;
+}
+
+
+        /* Кнопка "Хочу консультацию" */
+        .cta-wrap{
+            margin-top: 18px;
+            display: flex;
+            justify-content: center;
+        }
+        .cta-btn{
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 22px;
+            background-color: #e67e22;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 15px;
+            box-shadow: 0 6px 14px rgba(230, 126, 34, 0.25);
+            transition: transform .08s ease, background-color .15s ease;
+        }
+        .cta-btn:hover{
+            background-color: #d35400;
+            transform: translateY(-1px);
+        }
+        .cta-btn:active{
+            transform: translateY(0px);
+        }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Калькулятор налоговой нагрузки 2026 <span class="brand">ДИМАКС</span></h2>
+    <div class="subtitle">НДС рассчитан по ставке 22% (прогноз 2026).</div>
+
+    <div class="input-section">
+        <div>
+            <div class="input-group">
+                <div class="label-row">
+                    <label for="revMain">Выручка (ставка 22%)</label>
+                    <div class="tooltip-container">
+                        <div class="tooltip-icon">?</div>
+                        <div class="tooltip-text">Сумма продажи товаров/услуг без НДС. База для начисления НДС 22%.</div>
+                    </div>
+                </div>
+                <input type="text" inputmode="numeric" id="revMain" value="60 000 000" oninput="handleInput(this)">
+            </div>
+
+            <div class="input-group">
+                <div class="label-row">
+                    <label for="rev10">Выручка (ставка НДС 10%)</label>
+                    <div class="tooltip-container">
+                        <div class="tooltip-icon">?</div>
+                        <div class="tooltip-text">Льготная ставка для определенных товаров.</div>
+                    </div>
+                </div>
+                <input type="text" inputmode="numeric" id="rev10" value="0" oninput="handleInput(this)">
+            </div>
+
+            <div class="input-group">
+                <div class="label-row">
+                    <label for="rev0">Выручка 0% (экспорт)</label>
+                    <div class="tooltip-container">
+                        <div class="tooltip-icon">?</div>
+                        <div class="tooltip-text">Экспортные операции.</div>
+                    </div>
+                </div>
+                <input type="text" inputmode="numeric" id="rev0" value="0" oninput="handleInput(this)">
+            </div>
+
+            <div class="input-group">
+                <div class="label-row">
+                    <label for="incNoVat">Доходы без НДС</label>
+                    <div class="tooltip-container">
+                        <div class="tooltip-icon">?</div>
+                        <div class="tooltip-text">Операции, освобожденные от НДС.</div>
+                    </div>
+                </div>
+                <input type="text" inputmode="numeric" id="incNoVat" value="0" oninput="handleInput(this)">
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div>
+            <div class="input-group">
+                <div class="label-row">
+                    <label for="expenses">Расходы (всего, без НДС)</label>
+                    <div class="tooltip-container">
+                        <div class="tooltip-icon">?</div>
+                        <div class="tooltip-text">Все затраты (закупка, аренда, ФОТ) без входящего НДС.</div>
+                    </div>
+                </div>
+                <input type="text" inputmode="numeric" id="expenses" value="40 000 000" oninput="handleInput(this)">
+            </div>
+
+            <div class="input-group">
+                <div class="label-row">
+                    <label for="insurance">В т.ч. Страховые взносы</label>
+                    <div class="tooltip-container">
+                        <div class="tooltip-icon">?</div>
+                        <div class="tooltip-text">Взносы за сотрудников и ИП. Нужны для расчета вычета УСН.</div>
+                    </div>
+                </div>
+                <input type="text" inputmode="numeric" id="insurance" value="2 000 000" oninput="handleInput(this)">
+            </div>
+
+            <div class="input-group">
+                <div class="label-row">
+                    <label for="inputVat">Входящий НДС (от поставщиков)</label>
+                    <div class="tooltip-container">
+                        <div class="tooltip-icon">?</div>
+                        <div class="tooltip-text">НДС поставщиков. <br>Важно: на ставках 5% и 7% вычет запрещен, сумма становится расходом!</div>
+                    </div>
+                </div>
+                <input type="text" inputmode="numeric" id="inputVat" value="5 000 000" oninput="handleInput(this)">
+            </div>
+        </div>
+    </div>
+
+    <h3>Сравнение результатов:</h3>
+    <table id="resultTable">
+        <thead>
+            <tr>
+                <th>Режим</th>
+                <th>Итого Налогов</th>
+                <th>НДС 10/22%</th>
+                <th>НДС 5%</th>
+                <th>НДС 7%</th>
+                <th>Налог на прибыль 25%</th>
+                <th>УСН 6%</th>
+                <th>УСН 15%</th>
+                <th>Нагрузка</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr id="row-osno">
+                <td>ОСНО (22% + 25%)</td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td class="load-col"></td> </tr>
+            <tr id="row-u6-n5">
+                <td>УСН 6% + НДС 5%</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="load-col"></td>
+            </tr>
+            <tr id="row-u6-n7">
+                <td>УСН 6% + НДС 7%</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="load-col"></td>
+            </tr>
+            <tr id="row-u15-n5">
+                <td>УСН 15% + НДС 5%</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="load-col"></td>
+            </tr>
+            <tr id="row-u15-n7">
+                <td>УСН 15% + НДС 7%</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="load-col"></td>
+            </tr>
+            <tr id="row-u6-n22">
+                <td>УСН 6% + НДС 22%</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="load-col"></td>
+            </tr>
+            <tr id="row-u15-n22">
+                <td>УСН 15% + НДС 22%</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="load-col"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="cta-wrap">
+        <a class="cta-btn" href="https://t.me/belousov_m" target="_blank" rel="noopener">Хочу консультацию</a>
+    </div>
+</div>
+
+<script>
+    function formatNum(num) {
+        if (num === 0) return "-";
+        return num.toLocaleString('ru-RU', { maximumFractionDigits: 0 });
+    }
+    
+    function formatRes(num) {
+        return num.toLocaleString('ru-RU', { maximumFractionDigits: 0 });
+    }
+
+    function getNum(id) {
+        const val = document.getElementById(id).value.replace(/\s/g, '').replace(/,/g, '.');
+        return parseFloat(val) || 0;
+    }
+
+    function handleInput(input) {
+        let rawValue = input.value.replace(/\D/g, '');
+        if (rawValue === "") {
+            input.value = "";
+        } else {
+            input.value = parseInt(rawValue).toLocaleString('ru-RU');
+        }
+        calculate();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const inputs = document.querySelectorAll('input[type="text"]');
+        inputs.forEach(input => {
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.blur();
+                }
+            });
+        });
+        calculate();
+    });
+
+    function calculate() {
+        const revMain = getNum('revMain');
+        const rev10 = getNum('rev10');
+        const rev0 = getNum('rev0');
+        const incNoVat = getNum('incNoVat');
+        
+        const expenses = getNum('expenses');
+        const insurance = getNum('insurance');
+        const inputVat = getNum('inputVat');
+
+        const totalRevenue = revMain + rev10 + rev0 + incNoVat;
+
+        // --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ---
+        const RATE_MAIN = 0.22; // НДС 22%
+        
+        // 1. ОСНО (22% + 25%)
+        // Вычет НДС работает.
+        let osnoVat = (revMain * RATE_MAIN + rev10 * 0.10) - inputVat;
+        if (osnoVat < 0) osnoVat = 0;
+        let osnoProfitBase = totalRevenue - expenses;
+        const osnoProfitTax = osnoProfitBase > 0 ? osnoProfitBase * 0.25 : 0;
+        
+        updateRow('row-osno', totalRevenue, osnoVat, 0, 0, osnoProfitTax, 0, 0);
+
+
+        // --- БЛОК ЛЬГОТНЫХ СТАВОК (5% и 7%) ---
+        // Если выбрана ставка 5% или 7%, она применяется КО ВСЕМ облагаемым доходам (кроме 0%).
+        // Значит и revMain, и rev10 облагаются по ставке 5% (или 7%).
+        // Входящий НДС НЕ вычитается (он увеличивает расходы, но в этой таблице мы расходы не выводим).
+        
+        const expensesWithLostVat = expenses + inputVat;
+
+        // 2. УСН 6% + НДС 5%
+        // НДС 5% берется с суммы (Основная + Льготная 10%)
+        const vat5 = (revMain + rev10) * 0.05;
+        
+        // Налог УСН 6%
+        let usn6_base = totalRevenue;
+        let usn6_tax = usn6_base * 0.06;
+        let ded = usn6_tax * 0.5; // макс вычет 50%
+        if (insurance < ded) ded = insurance;
+        usn6_tax -= ded;
+        
+        updateRow('row-u6-n5', totalRevenue, 0, vat5, 0, 0, usn6_tax, 0);
+
+
+        // 3. УСН 6% + НДС 7%
+        const vat7 = (revMain + rev10) * 0.07;
+        updateRow('row-u6-n7', totalRevenue, 0, 0, vat7, 0, usn6_tax, 0);
+
+
+        // 4. УСН 15% + НДС 5%
+        // База = Доходы - (Расходы + Входящий НДС)
+        let usn15_base = totalRevenue - expensesWithLostVat;
+        let usn15_tax = usn15_base > 0 ? usn15_base * 0.15 : 0;
+        let usn15_min = totalRevenue * 0.01;
+        if (usn15_tax < usn15_min) usn15_tax = usn15_min;
+        
+        updateRow('row-u15-n5', totalRevenue, 0, vat5, 0, 0, 0, usn15_tax);
+
+
+        // 5. УСН 15% + НДС 7%
+        updateRow('row-u15-n7', totalRevenue, 0, 0, vat7, 0, 0, usn15_tax);
+
+
+        // --- ОБЩИЕ СТАВКИ НА УСН (22%) ---
+        
+        // 6. УСН 6% + НДС 22%
+        // НДС как на ОСНО (с вычетами). УСН как обычно.
+        updateRow('row-u6-n22', totalRevenue, osnoVat, 0, 0, 0, usn6_tax, 0);
+
+        // 7. УСН 15% + НДС 22%
+        let usn15_base_22 = totalRevenue - expenses;
+        let usn15_tax_22 = usn15_base_22 > 0 ? usn15_base_22 * 0.15 : 0;
+        let usn15_min_22 = totalRevenue * 0.01;
+        if (usn15_tax_22 < usn15_min_22) usn15_tax_22 = usn15_min_22;
+        
+        updateRow('row-u15-n22', totalRevenue, osnoVat, 0, 0, 0, 0, usn15_tax_22);
+
+        highlightBest();
+    }
+
+    function updateRow(rowId, income, v22, v5, v7, profit, u6, u15) {
+        const row = document.getElementById(rowId);
+        const cells = row.getElementsByTagName('td');
+        
+        const totalTax = v22 + v5 + v7 + profit + u6 + u15;
+        const load = (income > 0) ? (totalTax / income) * 100 : 0;
+
+        // Заполняем ячейки
+        cells[1].innerText = formatRes(totalTax); // Итого
+        cells[2].innerText = formatNum(v22);      // НДС 22
+        cells[3].innerText = formatNum(v5);       // НДС 5
+        cells[4].innerText = formatNum(v7);       // НДС 7
+        cells[5].innerText = formatNum(profit);   // Прибыль
+        cells[6].innerText = formatNum(u6);       // УСН 6
+        cells[7].innerText = formatNum(u15);      // УСН 15
+        cells[8].innerText = load.toFixed(2) + '%';// Нагрузка
+
+        row.dataset.total = totalTax; // Для поиска минимума
+    }
+
+    function highlightBest() {
+        const rows = document.querySelectorAll('tbody tr');
+        let minTax = Infinity;
+        let bestRow = null;
+
+        rows.forEach(row => {
+            row.classList.remove('best-option');
+            const val = parseFloat(row.dataset.total);
+            if (val < minTax) {
+                minTax = val;
+                bestRow = row;
+            }
+        });
+
+        if (bestRow) {
+            bestRow.classList.add('best-option');
+        }
+    }
+</script>
+
+</body>
+</html>
