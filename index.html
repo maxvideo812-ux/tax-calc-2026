@@ -17,7 +17,6 @@
             background: white;
             padding: 30px;
             border-radius: 12px;
-            
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
         h2 {
@@ -231,7 +230,7 @@
             line-height: 1.5;
         }
 
-        /* Кнопка "Задать вопрос в Telegram" */
+        /* Кнопка "Хочу консультацию" */
         .cta-wrap{
             margin-top: 0px; /* Убрали лишний отступ, так как он есть у надписи */
             display: flex;
@@ -242,17 +241,20 @@
             align-items: center;
             justify-content: center;
             padding: 14px 22px;
-            background-color: #e67e22;
+            /* ИЗМЕНЕНИЕ: Синий цвет Telegram */
+            background-color: #0088cc;
             color: #fff;
             text-decoration: none;
             border-radius: 10px;
             font-weight: 700;
             font-size: 15px;
-            box-shadow: 0 6px 14px rgba(230, 126, 34, 0.25);
+            /* ИЗМЕНЕНИЕ: Цвет тени под синюю кнопку */
+            box-shadow: 0 6px 14px rgba(0, 136, 204, 0.25);
             transition: transform .08s ease, background-color .15s ease;
         }
         .cta-btn:hover{
-            background-color: #d35400;
+            /* ИЗМЕНЕНИЕ: Цвет при наведении */
+            background-color: #0077b5;
             transform: translateY(-1px);
         }
         .cta-btn:active{
@@ -444,7 +446,7 @@
     </div>
 
     <div class="cta-wrap">
-        <a class="cta-btn" href="https://t.me/belousov_m" target="_blank" rel="noopener">Хочу консультацию</a>
+        <a class="cta-btn" href="https://t.me/belousov_m" target="_blank" rel="noopener">Задать вопрос в Telegram</a>
     </div>
 </div>
 
