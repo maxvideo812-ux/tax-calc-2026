@@ -212,18 +212,27 @@
             td:first-child { position: sticky; left: 0; z-index: 2; border-right: 2px solid #ddd; }
         }
     
-/* Фиксируем одинаковую ширину всех столбцов кроме первого */
-#resultTable th:not(:first-child),
-#resultTable td:not(:first-child) {
-    width: 120px;
-    min-width: 120px;
-    max-width: 120px;
-}
+        /* Фиксируем одинаковую ширину всех столбцов кроме первого */
+        #resultTable th:not(:first-child),
+        #resultTable td:not(:first-child) {
+            width: 120px;
+            min-width: 120px;
+            max-width: 120px;
+        }
 
+        /* --- СТИЛЬ ДЛЯ ДОБАВЛЕННОЙ НАДПИСИ --- */
+        .help-caption {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 15px;
+            line-height: 1.5;
+        }
 
         /* Кнопка "Хочу консультацию" */
         .cta-wrap{
-            margin-top: 18px;
+            margin-top: 0px; /* Убрали лишний отступ, так как он есть у надписи */
             display: flex;
             justify-content: center;
         }
@@ -428,6 +437,10 @@
             </tr>
         </tbody>
     </table>
+
+    <div class="help-caption">
+        Если сложно понять, какие данные вводить или как правильно читать результат — напишите нам, мы поможем.
+    </div>
 
     <div class="cta-wrap">
         <a class="cta-btn" href="https://t.me/belousov_m" target="_blank" rel="noopener">Хочу консультацию</a>
