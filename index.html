@@ -149,18 +149,21 @@
             outline: 2px solid #e67e2233;
         }
 
-        /* Таблица */
+        /* --- ТАБЛИЦА --- */
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            font-size: 13px;
+            font-size: 12.5px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            table-layout: fixed; 
         }
         th, td {
-            padding: 10px 8px;
+            padding: 10px 4px;
             text-align: right;
             border: 1px solid #ddd;
+            overflow: hidden;
+            white-space: nowrap;
         }
         th {
             background-color: #333;
@@ -168,59 +171,100 @@
             text-align: center;
             font-weight: 500;
             vertical-align: middle;
-            font-size: 12px;
+            font-size: 11px;
+            white-space: normal;
         }
-        /* Первый столбец (Режим) */
+
+        /* 1. Столбец РЕЖИМ */
+        th:first-child {
+            width: 160px;
+            min-width: 160px;
+            background-color: #333;
+            color: white;
+            text-align: center;
+        }
         td:first-child {
+            width: 160px;
+            min-width: 160px;
             text-align: left;
             font-weight: bold;
-            background-color: #f9f9f9;
-            width: 200px;
+            /* Цвет фона убран отсюда, чтобы работала заливка строки */
+            white-space: normal;
         }
         
-        /* Столбец Итого налогов */
-        td:nth-child(2) {
+        /* 2. Столбец ИТОГО */
+        th:nth-child(2), td:nth-child(2) {
+            width: 110px;
+            min-width: 110px;
             font-weight: bold;
-            background-color: #fffdf9;
-            border-right: 2px solid #e67e22; /* Визуальный разделитель */
+            border-right: 2px solid #aaa; /* Чуть темнее разделитель */
+        }
+        th:nth-child(2) {
+             background-color: #333;
+             color: white;
+        }
+
+        /* 3. Остальные Столбцы */
+        th:nth-child(n+3), td:nth-child(n+3) {
+            width: 85px;
+            min-width: 85px;
         }
         
         .load-col {
             font-weight: bold;
-            color: #555;
-            background-color: #f4f4f4;
+            color: #333;
         }
 
-        .best-option {
-            border: 2px solid #27ae60 !important;
-        }
-        .best-option td:first-child::after {
-            content: " ★ Выгодно";
-            color: #27ae60;
-            font-size: 11px;
-            display: block;
-            font-weight: normal;
-        }
-        
         @media (max-width: 1100px) {
             .container { padding: 10px; }
             .input-section { grid-template-columns: 1fr; gap: 20px; }
             .divider { display: none; }
-            /* Горизонтальный скролл для таблицы */
-            table { display: block; overflow-x: auto; white-space: nowrap; }
-            th, td { padding: 8px 4px; min-width: 90px; }
-            td:first-child { position: sticky; left: 0; z-index: 2; border-right: 2px solid #ddd; }
-        }
-    
-        /* Фиксируем одинаковую ширину всех столбцов кроме первого */
-        #resultTable th:not(:first-child),
-        #resultTable td:not(:first-child) {
-            width: 120px;
-            min-width: 120px;
-            max-width: 120px;
+            table { display: block; overflow-x: auto; white-space: nowrap; table-layout: auto; }
+            th, td { padding: 8px 4px; min-width: 80px; }
+            
+            th:first-child, td:first-child { 
+                position: sticky; 
+                left: 0; 
+                z-index: 2; 
+                border-right: 2px solid #ddd; 
+                min-width: 140px;
+                /* На мобильном фон первого столбца фиксируем, чтобы не просвечивал при скролле, 
+                   но цвет будем менять скриптом */
+                background-color: inherit; 
+            }
         }
 
-        /* --- СТИЛЬ ДЛЯ ДОБАВЛЕННОЙ НАДПИСИ --- */
+        /* --- ЦВЕТОВАЯ ИНДИКАЦИЯ (СВЕТОФОР) --- */
+        
+        /* Зеленый (Выгодно) */
+        tr.row-best td {
+            background-color: #e6f4ea !important;
+            color: #1e4620;
+        }
+        tr.row-best:hover td{background-color:#d4edda !important;}
+        tr.row-best td:first-child::after {
+            content: " ★ Лучший выбор";
+            color: #0f5132;
+            font-size: 10px;
+            display: block;
+            font-weight: normal;
+        }
+
+        /* Красный (Невыгодно) */
+        tr.row-worst td {
+            background-color: #fdecea !important;
+            color: #611a15;
+        }
+        tr.row-worst:hover td{background-color:#f5c6cb !important;}
+
+        /* Желтый (Средне) */
+        tr.row-mid td {
+            background-color: #fef7e0 !important;
+            color: #5c4b00;
+        }
+        tr.row-mid:hover td{background-color:#ffecb5 !important;}
+
+        /* Надпись помощи */
         .help-caption {
             text-align: center;
             margin-top: 30px;
@@ -230,9 +274,9 @@
             line-height: 1.5;
         }
 
-        /* Кнопка "Хочу консультацию" */
+        /* Кнопка */
         .cta-wrap{
-            margin-top: 0px; /* Убрали лишний отступ, так как он есть у надписи */
+            margin-top: 0px; 
             display: flex;
             justify-content: center;
         }
@@ -241,19 +285,16 @@
             align-items: center;
             justify-content: center;
             padding: 14px 22px;
-            /* ИЗМЕНЕНИЕ: Синий цвет Telegram */
             background-color: #0088cc;
             color: #fff;
             text-decoration: none;
             border-radius: 10px;
             font-weight: 700;
             font-size: 15px;
-            /* ИЗМЕНЕНИЕ: Цвет тени под синюю кнопку */
             box-shadow: 0 6px 14px rgba(0, 136, 204, 0.25);
             transition: transform .08s ease, background-color .15s ease;
         }
         .cta-btn:hover{
-            /* ИЗМЕНЕНИЕ: Цвет при наведении */
             background-color: #0077b5;
             transform: translateY(-1px);
         }
@@ -366,77 +407,45 @@
                 <th>Налог на прибыль 25%</th>
                 <th>УСН 6%</th>
                 <th>УСН 15%</th>
+                <th>АУСН 8%</th>
+                <th>АУСН 20%</th>
                 <th>Нагрузка</th>
             </tr>
         </thead>
         <tbody>
             <tr id="row-osno">
-                <td>ОСНО (22% + 25%)</td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td class="load-col"></td> </tr>
+                <td>ОСНО (22% + 25%)</td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td class="load-col"></td> </tr>
             <tr id="row-u6-n5">
                 <td>УСН 6% + НДС 5%</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td class="load-col"></td>
+                <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td class="load-col"></td>
             </tr>
             <tr id="row-u6-n7">
                 <td>УСН 6% + НДС 7%</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td class="load-col"></td>
+                <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td class="load-col"></td>
             </tr>
             <tr id="row-u15-n5">
                 <td>УСН 15% + НДС 5%</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td class="load-col"></td>
+                <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td class="load-col"></td>
             </tr>
             <tr id="row-u15-n7">
                 <td>УСН 15% + НДС 7%</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td class="load-col"></td>
+                <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td class="load-col"></td>
             </tr>
             <tr id="row-u6-n22">
                 <td>УСН 6% + НДС 22%</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td class="load-col"></td>
+                <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td class="load-col"></td>
             </tr>
             <tr id="row-u15-n22">
                 <td>УСН 15% + НДС 22%</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td class="load-col"></td>
+                <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td class="load-col"></td>
+            </tr>
+            <tr id="row-ausn8">
+                <td>АУСН 8%</td>
+                <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td class="load-col"></td>
+            </tr>
+            <tr id="row-ausn20">
+                <td>АУСН 20%</td>
+                <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td></td> <td class="load-col"></td>
             </tr>
         </tbody>
     </table>
@@ -504,109 +513,117 @@
         const RATE_MAIN = 0.22; // НДС 22%
         
         // 1. ОСНО (22% + 25%)
-        // Вычет НДС работает.
         let osnoVat = (revMain * RATE_MAIN + rev10 * 0.10) - inputVat;
         if (osnoVat < 0) osnoVat = 0;
         let osnoProfitBase = totalRevenue - expenses;
         const osnoProfitTax = osnoProfitBase > 0 ? osnoProfitBase * 0.25 : 0;
         
-        updateRow('row-osno', totalRevenue, osnoVat, 0, 0, osnoProfitTax, 0, 0);
+        updateRow('row-osno', totalRevenue, osnoVat, 0, 0, osnoProfitTax, 0, 0, 0, 0);
 
-
-        // --- БЛОК ЛЬГОТНЫХ СТАВОК (5% и 7%) ---
-        // Если выбрана ставка 5% или 7%, она применяется КО ВСЕМ облагаемым доходам (кроме 0%).
-        // Значит и revMain, и rev10 облагаются по ставке 5% (или 7%).
-        // Входящий НДС НЕ вычитается (он увеличивает расходы, но в этой таблице мы расходы не выводим).
-        
         const expensesWithLostVat = expenses + inputVat;
 
         // 2. УСН 6% + НДС 5%
-        // НДС 5% берется с суммы (Основная + Льготная 10%)
         const vat5 = (revMain + rev10) * 0.05;
-        
-        // Налог УСН 6%
         let usn6_base = totalRevenue;
         let usn6_tax = usn6_base * 0.06;
         let ded = usn6_tax * 0.5; // макс вычет 50%
         if (insurance < ded) ded = insurance;
         usn6_tax -= ded;
-        
-        updateRow('row-u6-n5', totalRevenue, 0, vat5, 0, 0, usn6_tax, 0);
-
+        updateRow('row-u6-n5', totalRevenue, 0, vat5, 0, 0, usn6_tax, 0, 0, 0);
 
         // 3. УСН 6% + НДС 7%
         const vat7 = (revMain + rev10) * 0.07;
-        updateRow('row-u6-n7', totalRevenue, 0, 0, vat7, 0, usn6_tax, 0);
-
+        updateRow('row-u6-n7', totalRevenue, 0, 0, vat7, 0, usn6_tax, 0, 0, 0);
 
         // 4. УСН 15% + НДС 5%
-        // База = Доходы - (Расходы + Входящий НДС)
         let usn15_base = totalRevenue - expensesWithLostVat;
         let usn15_tax = usn15_base > 0 ? usn15_base * 0.15 : 0;
         let usn15_min = totalRevenue * 0.01;
         if (usn15_tax < usn15_min) usn15_tax = usn15_min;
-        
-        updateRow('row-u15-n5', totalRevenue, 0, vat5, 0, 0, 0, usn15_tax);
-
+        updateRow('row-u15-n5', totalRevenue, 0, vat5, 0, 0, 0, usn15_tax, 0, 0);
 
         // 5. УСН 15% + НДС 7%
-        updateRow('row-u15-n7', totalRevenue, 0, 0, vat7, 0, 0, usn15_tax);
+        updateRow('row-u15-n7', totalRevenue, 0, 0, vat7, 0, 0, usn15_tax, 0, 0);
 
-
-        // --- ОБЩИЕ СТАВКИ НА УСН (22%) ---
-        
         // 6. УСН 6% + НДС 22%
-        // НДС как на ОСНО (с вычетами). УСН как обычно.
-        updateRow('row-u6-n22', totalRevenue, osnoVat, 0, 0, 0, usn6_tax, 0);
+        updateRow('row-u6-n22', totalRevenue, osnoVat, 0, 0, 0, usn6_tax, 0, 0, 0);
 
         // 7. УСН 15% + НДС 22%
         let usn15_base_22 = totalRevenue - expenses;
         let usn15_tax_22 = usn15_base_22 > 0 ? usn15_base_22 * 0.15 : 0;
         let usn15_min_22 = totalRevenue * 0.01;
         if (usn15_tax_22 < usn15_min_22) usn15_tax_22 = usn15_min_22;
-        
-        updateRow('row-u15-n22', totalRevenue, osnoVat, 0, 0, 0, 0, usn15_tax_22);
+        updateRow('row-u15-n22', totalRevenue, osnoVat, 0, 0, 0, 0, usn15_tax_22, 0, 0);
 
-        highlightBest();
+        // 8. АУСН 8%
+        let ausn8_tax = totalRevenue * 0.08;
+        updateRow('row-ausn8', totalRevenue, 0, 0, 0, 0, 0, 0, ausn8_tax, 0);
+
+        // 9. АУСН 20%
+        // Взносы не вычитаем, входной НДС учитываем в расходах
+        let expensesAusn = expenses + inputVat; 
+        
+        let ausn20_base = totalRevenue - expensesAusn;
+        let ausn20_tax = ausn20_base > 0 ? ausn20_base * 0.20 : 0;
+        
+        let ausn20_min = totalRevenue * 0.03;
+        if (ausn20_tax < ausn20_min) ausn20_tax = ausn20_min;
+
+        updateRow('row-ausn20', totalRevenue, 0, 0, 0, 0, 0, 0, 0, ausn20_tax);
+
+        // ВЫЗОВ ФУНКЦИИ РАСКРАСКИ (НОВАЯ)
+        colorRows();
     }
 
-    function updateRow(rowId, income, v22, v5, v7, profit, u6, u15) {
+    function updateRow(rowId, income, v22, v5, v7, profit, u6, u15, ausn8, ausn20) {
         const row = document.getElementById(rowId);
         const cells = row.getElementsByTagName('td');
         
-        const totalTax = v22 + v5 + v7 + profit + u6 + u15;
+        const totalTax = v22 + v5 + v7 + profit + u6 + u15 + ausn8 + ausn20;
         const load = (income > 0) ? (totalTax / income) * 100 : 0;
 
-        // Заполняем ячейки
-        cells[1].innerText = formatRes(totalTax); // Итого
-        cells[2].innerText = formatNum(v22);      // НДС 22
-        cells[3].innerText = formatNum(v5);       // НДС 5
-        cells[4].innerText = formatNum(v7);       // НДС 7
-        cells[5].innerText = formatNum(profit);   // Прибыль
-        cells[6].innerText = formatNum(u6);       // УСН 6
-        cells[7].innerText = formatNum(u15);      // УСН 15
-        cells[8].innerText = load.toFixed(2) + '%';// Нагрузка
+        cells[1].innerText = formatRes(totalTax);
+        cells[2].innerText = formatNum(v22);
+        cells[3].innerText = formatNum(v5);
+        cells[4].innerText = formatNum(v7);
+        cells[5].innerText = formatNum(profit);
+        cells[6].innerText = formatNum(u6);
+        cells[7].innerText = formatNum(u15);
+        cells[8].innerText = formatNum(ausn8);
+        cells[9].innerText = formatNum(ausn20);
+        cells[10].innerText = load.toFixed(2) + '%';
 
-        row.dataset.total = totalTax; // Для поиска минимума
+        row.dataset.total = totalTax;
     }
 
-    function highlightBest() {
+    // НОВАЯ ФУНКЦИЯ ДЛЯ ЗАЛИВКИ (СВЕТОФОР)
+    function colorRows() {
         const rows = document.querySelectorAll('tbody tr');
         let minTax = Infinity;
-        let bestRow = null;
+        let maxTax = -Infinity;
 
+        // 1. Ищем минимум и максимум
         rows.forEach(row => {
-            row.classList.remove('best-option');
             const val = parseFloat(row.dataset.total);
-            if (val < minTax) {
-                minTax = val;
-                bestRow = row;
+            if (!isNaN(val)) {
+                if (val < minTax) minTax = val;
+                if (val > maxTax) maxTax = val;
             }
         });
 
-        if (bestRow) {
-            bestRow.classList.add('best-option');
-        }
+        // 2. Красим
+        rows.forEach(row => {
+            row.classList.remove('row-best', 'row-worst', 'row-mid', 'best-option');
+            const val = parseFloat(row.dataset.total);
+
+            if (val === minTax) {
+                row.classList.add('row-best'); // Зеленый
+            } else if (val === maxTax) {
+                row.classList.add('row-worst'); // Красный
+            } else {
+                row.classList.add('row-mid'); // Желтый
+            }
+        });
     }
 </script>
 
